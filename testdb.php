@@ -1,8 +1,8 @@
 <?php
-$host = "127.0.0.1";     // localhost
-$user = "root";           // username-ka MySQL
-$pass = "123";            // password-ka cusub ee root
-$dbname = "course_registration";  // database-ka aad abuurtay
+$host = "127.0.0.1";     
+$user = "root";          
+$pass = "123";           
+$dbname = "course_registration";  
 
 $conn = new mysqli($host, $user, $pass, $dbname);
 

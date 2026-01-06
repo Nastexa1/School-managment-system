@@ -1,10 +1,6 @@
 <?php
-$conn = mysqli_connect("localhost","root","123","school_management");
-if(!$conn){
-    die("Connection failed: ".mysqli_connect_error());
-}
+include 'db.php';
 
-// Get class_id from URL
 $id = isset($_GET['id']) ? $_GET['id'] : '';
 
 $class_name = '';
@@ -12,15 +8,12 @@ $students = [];
 $total_students = 0;
 
 if($id != ''){
-    // Fetch class name
     $sql_class = "SELECT * FROM classes WHERE id='$id'";
     $res_class = mysqli_query($conn, $sql_class);
     if($res_class && mysqli_num_rows($res_class) > 0){
         $class_row = mysqli_fetch_assoc($res_class);
         $class_name = $class_row['class_name'];
 
-        // Fetch students in this class who are registered (assuming all in students table are registered)
-        // If you have a 'status' column, you can filter WHERE status='registered'
         $sql_students = "SELECT * FROM students WHERE class='$class_name'";
         $res_students = mysqli_query($conn, $sql_students);
         if($res_students){
@@ -32,7 +25,6 @@ if($id != ''){
     }
 }
 
-// Fetch all classes
 $sql_all_classes = "SELECT * FROM classes";
 $result_classes = mysqli_query($conn, $sql_all_classes);
 ?>
@@ -43,40 +35,80 @@ $result_classes = mysqli_query($conn, $sql_all_classes);
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Classes & Students</title>
 <script src="https://cdn.tailwindcss.com"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    </style>
 </head>
 <body class="bg-gray-100">
+    <div class="flex">
 
-<div class="flex">
-
-    <!-- Sidebar -->
-    <div class="bg-gray-800 fixed h-[100vh] text-white w-64 flex flex-col">
-        <div class="p-6 text-center text-xl font-bold border-b border-gray-700">Student Record</div>
-        <nav class="flex-1 p-4 space-y-2">
-            <a href="index.php" class="flex items-center p-2 rounded hover:bg-gray-700">🏠 Dashboard</a>
-            <a href="view_students.php" class="flex items-center p-2 rounded hover:bg-gray-700">🎓 Students</a>
-            <a href="add_student.php" class="flex items-center p-2 rounded hover:bg-gray-700">➕ Add Student</a>
-            <a href="classes.php" class="flex items-center p-2 rounded hover:bg-gray-700">🏫 Classes</a>
-            <a href="grades.php" class="flex items-center p-2 rounded hover:bg-gray-700">📝 Grades</a>
-            <a href="attendence.php" class="flex items-center p-2 rounded hover:bg-gray-700">✅ Attendance</a>
-            <a href="logout.php" class="flex items-center p-2 rounded hover:bg-gray-700">🔓 Logout</a>
-        </nav>
-    </div>
-
-    <!-- Main Content -->
-    <div class="flex-1 px-10 pt-10 ml-64">
-
-        <!-- Header -->
-        <div class="flex justify-between items-center mb-6">
-            <h1 class="text-2xl font-semibold">All Classes</h1>
+    <aside class="w-72 fixed bg-slate-900 h-[100vh] text-slate-300 flex flex-col shadow-2xl z-10">
+        <div class="p-8 text-center border-b border-slate-800 flex">
+            <div class="bg-blue-600 w-12 h-12 rounded-lg flex items-center justify-center mx-auto  shadow-lg shadow-blue-500/50">
+                <i class="fa-solid fa-graduation-cap text-white text-xl"></i>
+            </div>
+            <span class="text-white text-xl font-bold tracking-tight mt-2">SCHOOL SYSTEM</span>
         </div>
 
-        <!-- Classes Grid -->
+        <nav class="flex-1 p-6 space-y-3">
+            <p class="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-4">Main Menu</p>
+            <a href="dashboard.php" class="flex items-center space-x-4 bg-blue-600/10 text-blue-400 p-3 rounded-xl border border-blue-600/20 transition-all">
+                <i class="fa-solid fa-house w-5 text-center"></i>
+                <span class="font-medium">Dashboard</span>
+            </a>
+            <a href="profile.php" class="flex items-center space-x-4 hover:bg-slate-800 hover:text-white p-3 rounded-xl transition-all group">
+    <i class="fa-solid fa-user-circle w-5 text-center group-hover:text-blue-400"></i>
+    <span class="font-medium">Profile</span>
+</a>
+            <a href="view_students.php" class="flex items-center space-x-4 hover:bg-slate-800 hover:text-white p-3 rounded-xl transition-all group">
+                <i class="fa-solid fa-user-graduate w-5 text-center group-hover:text-blue-400"></i>
+                <span class="font-medium">Students</span>
+            </a>
+            <a href="add_student.php" class="flex items-center space-x-4 hover:bg-slate-800 hover:text-white p-3 rounded-xl transition-all group">
+                <i class="fa-solid fa-user-plus w-5 text-center group-hover:text-blue-400"></i>
+                <span class="font-medium">Add Student</span>
+            </a>
+            <a href="classes.php" class="flex items-center space-x-4 hover:bg-slate-800 hover:text-white p-3 rounded-xl transition-all group">
+                <i class="fa-solid fa-chalkboard-user w-5 text-center group-hover:text-blue-400"></i>
+                <span class="font-medium">Classes</span>
+            </a>
+            <a href="attendence.php" class="flex items-center space-x-4 hover:bg-slate-800 hover:text-white p-3 rounded-xl transition-all group">
+                <i class="fa-solid fa-calendar-check w-5 text-center group-hover:text-blue-400"></i>
+                <span class="font-medium">Attendance</span>
+            </a>
+            <a href="grades.php" class="flex items-center space-x-4 hover:bg-slate-800 hover:text-white p-3 rounded-xl transition-all group">
+                <i class="fa-solid fa-file-invoice w-5 text-center group-hover:text-blue-400"></i>
+                <span class="font-medium">Grades</span>
+            </a>
+            
+            <div class="">
+                <a href="logout.php" class="flex items-center space-x-4 bg-red-500/5 text-red-500 hover:bg-red-500 hover:text-white p-3 rounded-xl transition-all">
+                    <i class="fa-solid fa-right-from-bracket w-5 text-center"></i>
+                    <span class="font-medium">Logout</span>
+                </a>
+            </div>
+        </nav>
+    </aside>
+    
+
+
+
+    <div class="flex-1 px-10 pt-10 ml-64">
+
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-2xl font-semibold">All Classes</h1>
+            <a href="add_class.php" class="bg-blue-600 px-10 py-2 text-white rounded">
+                AddClass
+            </a>
+        </div>
+
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-10">
         <?php while($row = mysqli_fetch_assoc($result_classes)){ ?>
-            <div class="bg-gray-800 text-white p-4 rounded-lg shadow hover:shadow-lg transition">
+            <div class="bg-white text-black p-4 rounded-lg shadow hover:shadow-lg transition">
                 <h2 class="text-lg font-bold mb-2"><?php echo $row['class_name']; ?></h2>
-                <p class="text-gray-100"><?php echo $row['description']; ?></p>
+                <p class="text-black"><?php echo $row['description']; ?></p>
                 <div class="flex gap-3 mt-3">
                     <a href="?id=<?php echo $row['id']; ?>" class="bg-blue-600 px-3 py-1 rounded text-white hover:bg-blue-800">View Students</a>
                     <a href="#" class="text-yellow-500 hover:text-yellow-700"><i class="fa-solid fa-pen-to-square"></i></a>
@@ -86,7 +118,6 @@ $result_classes = mysqli_query($conn, $sql_all_classes);
         <?php } ?>
         </div>
 
-        <!-- Students Table -->
         <?php if($id != ''){ ?>
         <div class="mb-6">
             <h2 class="text-xl font-bold mb-2">Students in <?php echo $class_name; ?> (Total: <?php echo $total_students; ?>)</h2>

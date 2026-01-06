@@ -1,0 +1,8 @@
+/* Custom Styles */
+body {
+    scroll-behavior: smooth;
+}
+::selection {
+    background: #2563eb;
+    color: white;
+}

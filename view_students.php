@@ -1,111 +1,162 @@
 <?php
-$conn=mysqli_connect("localhost","root","123","school_management");
-if(!$conn){
-  die("connection is failed".mysqli_connect_error());
+include 'db.php';
+
+$status_filter = isset($_GET['status']) ? $_GET['status'] : 'active';
+
+if($status_filter == 'all'){
+    $sql = "SELECT * FROM students";
+}else{
+    $sql = "SELECT * FROM students WHERE status='$status_filter'";
 }
-$sql="SELECT*FROM students";
-$result=mysqli_query($conn,$sql)
+$result = mysqli_query($conn,$sql);
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student List</title>
+    <title>Student Directory</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    </style>
 </head>
-<body class="bg-gray-100">
+<body class="bg-slate-50">
 
 <div class="flex">
 
-    <!-- Sidebar -->
-    <div class="bg-gray-800 fixed h-[100vh] text-white w-64 flex flex-col">
-        <div class="p-6 text-center text-xl font-bold border-b border-gray-700">
-            Student Record
+    <aside class="w-72 fixed bg-slate-900 h-[100vh] text-slate-300 flex flex-col shadow-2xl z-10">
+        <div class="p-8 text-center border-b border-slate-800 flex">
+            <div class="bg-blue-600 w-12 h-12 rounded-lg flex items-center justify-center mx-auto  shadow-lg shadow-blue-500/50">
+                <i class="fa-solid fa-graduation-cap text-white text-xl"></i>
+            </div>
+            <span class="text-white text-xl font-bold tracking-tight mt-2">SCHOOL SYSTEM</span>
         </div>
 
-        <nav class="flex-1 p-4 space-y-2">
-            <a href="index.php" class="flex items-center p-2 rounded hover:bg-gray-700">🏠 Dashboard</a>
-            <a href="view_students.php" class="flex items-center p-2 rounded hover:bg-gray-700">🎓 Students</a>
-            <a href="add_student.php" class="flex items-center p-2 rounded hover:bg-gray-700">➕ Add Student</a>
-            <a href="classes.php" class="flex items-center p-2 rounded hover:bg-gray-700">🏫 Classes</a>
-            <a href="#" class="flex items-center p-2 rounded hover:bg-gray-700">📝 Grades</a>
-            <a href="#" class="flex items-center p-2 rounded hover:bg-gray-700">✅ Attendance</a>
-            <a href="logout.php" class="flex items-center p-2 rounded hover:bg-gray-700">🔓 Logout</a>
+        <nav class="flex-1 p-6 space-y-3">
+            <p class="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-4">Main Menu</p>
+            <a href="dashboard.php" class="flex items-center space-x-4 bg-blue-600/10 text-blue-400 p-3 rounded-xl border border-blue-600/20 transition-all">
+                <i class="fa-solid fa-house w-5 text-center"></i>
+                <span class="font-medium">Dashboard</span>
+            </a>
+            <a href="profile.php" class="flex items-center space-x-4 hover:bg-slate-800 hover:text-white p-3 rounded-xl transition-all group">
+    <i class="fa-solid fa-user-circle w-5 text-center group-hover:text-blue-400"></i>
+    <span class="font-medium">Profile</span>
+</a>
+            <a href="view_students.php" class="flex items-center space-x-4 hover:bg-slate-800 hover:text-white p-3 rounded-xl transition-all group">
+                <i class="fa-solid fa-user-graduate w-5 text-center group-hover:text-blue-400"></i>
+                <span class="font-medium">Students</span>
+            </a>
+            <a href="add_student.php" class="flex items-center space-x-4 hover:bg-slate-800 hover:text-white p-3 rounded-xl transition-all group">
+                <i class="fa-solid fa-user-plus w-5 text-center group-hover:text-blue-400"></i>
+                <span class="font-medium">Add Student</span>
+            </a>
+            <a href="classes.php" class="flex items-center space-x-4 hover:bg-slate-800 hover:text-white p-3 rounded-xl transition-all group">
+                <i class="fa-solid fa-chalkboard-user w-5 text-center group-hover:text-blue-400"></i>
+                <span class="font-medium">Classes</span>
+            </a>
+            <a href="attendence.php" class="flex items-center space-x-4 hover:bg-slate-800 hover:text-white p-3 rounded-xl transition-all group">
+                <i class="fa-solid fa-calendar-check w-5 text-center group-hover:text-blue-400"></i>
+                <span class="font-medium">Attendance</span>
+            </a>
+            <a href="grades.php" class="flex items-center space-x-4 hover:bg-slate-800 hover:text-white p-3 rounded-xl transition-all group">
+                <i class="fa-solid fa-file-invoice w-5 text-center group-hover:text-blue-400"></i>
+                <span class="font-medium">Grades</span>
+            </a>
+            
+            <div class="">
+                <a href="logout.php" class="flex items-center space-x-4 bg-red-500/5 text-red-500 hover:bg-red-500 hover:text-white p-3 rounded-xl transition-all">
+                    <i class="fa-solid fa-right-from-bracket w-5 text-center"></i>
+                    <span class="font-medium">Logout</span>
+                </a>
+            </div>
         </nav>
-    </div>
-    <!-- Sidebar End -->
+    </aside>
 
-    <!-- Main Content -->
-    <div class="flex-1 px-10 pt-10 ml-64">
+    <main class="flex-1 ml-72 p-10">
+        
+        <header class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+            <div>
+                <h1 class="text-3xl font-extrabold text-slate-800 tracking-tight">Student Records</h1>
+                <p class="text-slate-500 text-sm">Managing student information and enrollment status.</p>
+            </div>
+            
+            <form method="GET" class="flex items-center bg-white shadow-sm border border-slate-200 rounded-xl px-4 py-2 space-x-3">
+                <label for="status" class="text-xs font-bold text-slate-400 uppercase tracking-wider">Show:</label>
+                <select name="status" id="status" onchange="this.form.submit()" class="bg-transparent text-sm font-bold focus:outline-none cursor-pointer text-slate-700">
+                    <option value="active" <?php if($status_filter=='active') echo 'selected'; ?>>Active</option>
+                    <option value="inactive" <?php if($status_filter=='inactive') echo 'selected'; ?>>Inactive</option>
+                    <option value="all" <?php if($status_filter=='all') echo 'selected'; ?>>All Students</option>
+                </select>
+            </form>
+        </header>
 
-        <h1 class="text-2xl font-bold mb-6 text-center">Student List</h1>
-
-        <div class="overflow-x-auto">
-            <table class="min-w-full bg-white  shadow-lg rounded-md overflow-hidden">
-                <thead class="bg-gray-700 text-white text-sm">
-                    <tr>
-                        <th class="px-3 py-2 border">ID</th>
-                        <th class="px-3 py-2 border">Name</th>
-                        <th class="px-3 py-2 border">Mother Name</th>
-                        <th class="px-3 py-2 border">Phone</th>
-                        <th class="px-3 py-2 border">Class</th>
-                        <th class="px-3 py-2 border">Address</th>
-                        <th class="px-3 py-2 border">Gender</th>
-                        <th class="px-3 py-2 border">Actions</th>
-                    </tr>
-                </thead>
-
-                <tbody class="text-sm">
-                    <?php while ($row = mysqli_fetch_assoc($result)) { ?>
-                        <tr class="hover:bg-gray-100 transition">
-                            <td class="px-3 py-2 border"><?php echo $row['id']; ?></td>
-                            <td class="px-3 py-2 border"><?php echo $row['fullName']; ?></td>
-                            <td class="px-3 py-2 border"><?php echo $row['MotherName']; ?></td>
-                            <td class="px-3 py-2 border"><?php echo $row['Phone']; ?></td>
-                            <td class="px-3 py-2 border"><?php echo $row['class']; ?></td>
-                            <td class="px-3 py-2 border"><?php echo $row['address']; ?></td>
-                            <td class="px-3 py-2 border"><?php echo $row['gender']; ?></td>
-
-                            <td class="px-3 py-2 border flex gap-3 justify-center">
-
-                                <!-- Edit Icon -->
-                                <a href="edit_student.php?id=<?php echo $row['id']; ?>"
-                                   class="text-green-600 hover:text-green-800" title="Edit">
-                                    <svg xmlns="http://www.w3.org/2000/svg" 
-                                         class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                         d="M11 5H6a2 2 0 00-2 2v11a2 
-                                         2 0 002 2h11a2 2 0 002-2v-5M18.5 
-                                         2.5a2.121 2.121 0 113 3L12 15l-4 
-                                         1 1-4 9.5-9.5z" />
-                                    </svg>
-                                </a>
-
-                                <!-- Delete Icon -->
-                                <a href="delete_student.php?id=<?php echo $row['id']; ?>"
-                                   onclick="return confirm('Delete this student?');"
-                                   class="text-red-600 hover:text-red-800" title="Delete">
-                                    <svg xmlns="http://www.w3.org/2000/svg" 
-                                         class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                         d="M19 7l-.867 12.142A2 2 0 0116.138 
-                                         21H7.862a2 2 0 01-1.995-1.858L5 
-                                         7m5 4v6m4-6v6M9 7h6m-7 0V5a2 
-                                         2 0 012-2h3a2 2 0 012 2v2" />
-                                    </svg>
-                                </a>
-
-                            </td>
-
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-slate-50/50 text-slate-500 uppercase text-[11px] tracking-widest font-bold">
+                            <th class="px-6 py-4 border-b border-slate-100">ID</th>
+                            <th class="px-6 py-4 border-b border-slate-100">Student Name</th>
+                            <th class="px-6 py-4 border-b border-slate-100">Mother Name</th>
+                            <th class="px-6 py-4 border-b border-slate-100">Phone</th>
+                            <th class="px-6 py-4 border-b border-slate-100">Class</th>
+                            <th class="px-6 py-4 border-b border-slate-100 text-center">Actions</th>
                         </tr>
-                    <?php } ?>
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 text-slate-700">
+                        <?php while ($row = mysqli_fetch_assoc($result)) { ?>
+                        <tr class="hover:bg-slate-50/50 transition-colors">
+                            <td class="px-6 py-4 font-bold text-slate-400 text-sm">#<?php echo $row['id']; ?></td>
+                            <td class="px-6 py-4 font-semibold text-slate-800"><?php echo $row['fullName']; ?></td>
+                            <td class="px-6 py-4 text-slate-500 text-sm"><?php echo $row['MotherName']; ?></td>
+                            <td class="px-6 py-4 text-sm"><?php echo $row['Phone']; ?></td>
+                            <td class="px-6 py-4">
+                                <span class="px-3 py-1 bg-blue-50 text-blue-600 rounded-md text-xs font-bold">
+                                    <?php echo $row['class']; ?>
+                                </span>
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="flex items-center justify-center space-x-3">
+                                    <a href="edit_student.php?id=<?php echo $row['id']; ?>" 
+                                       class="text-blue-600 hover:text-blue-800 text-xs font-bold uppercase tracking-wider">
+                                       Edit
+                                    </a>
+
+                                    <span class="text-slate-200">|</span>
+
+                                    <?php if($row['status']=='active'){ ?>
+                                        <a href="deactivate_student.php?id=<?php echo $row['id']; ?>" 
+                                           onclick="return confirm('Are you sure to deactivate?');" 
+                                           class="text-orange-500 hover:text-orange-700 text-xs font-bold uppercase tracking-wider">
+                                            Deactivate
+                                        </a>
+                                    <?php } else { ?>
+                                        <a href="activate_student.php?id=<?php echo $row['id']; ?>" 
+                                           onclick="return confirm('Are you sure to activate?');" 
+                                           class="text-green-500 hover:text-green-700 text-xs font-bold uppercase tracking-wider">
+                                            Activate
+                                        </a>
+                                    <?php } ?>
+                                </div>
+                            </td>
+                        </tr>
+                        <?php } ?>
+                        
+                        <?php if(mysqli_num_rows($result) == 0): ?>
+                        <tr>
+                            <td colspan="6" class="px-6 py-12 text-center text-slate-400 text-sm italic">
+                                No records found for this category.
+                            </td>
+                        </tr>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+            </div>
         </div>
-
-    </div>
-
+    </main>
 </div>
 
 </body>

@@ -1,8 +1,5 @@
 <?php
-$conn=mysqli_connect("localhost","root","123","school_management");
-if(!$conn){
-    die("Connection Filed".mysqli_connect_error());
-}
+include 'db.php';
 if(isset($_GET['id'])){
     $id=$_GET['id'];
     $sql="DELETE FROM classes WHERE id=$id";

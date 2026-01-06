@@ -1,16 +1,22 @@
 <?php
-$conn=mysqli_connect("localhost","root","123","school_management");
-if(!$conn){
-    die("Connection Field".mysqli_connect_error());
+include 'db.php';
+
+$id = $_GET['id'];
+
+$check = mysqli_query(
+  $conn,
+  "SELECT id FROM attendance WHERE student_id = $id LIMIT 1"
+);
+
+if(mysqli_num_rows($check) > 0){
+  echo "<script>
+    alert('❌ This student has attendance records. You cannot delete.');
+    window.location.href='view_students.php';
+  </script>";
+  exit;
 }
-if(isset($_GET['id'])){
-    $id=$_GET['id'];
-    $sql="DELETE FROM students WHERE id=$id";
-    mysqli_query($conn,$sql);
-    header("Location: view_students.php?status=deleted");
-    exit();
-}
-else{
-    header("Location: view_students.php");
-    exit();
-}
+
+mysqli_query($conn,"DELETE FROM students WHERE id=$id");
+
+header("Location: view_students.php");
+exit;
